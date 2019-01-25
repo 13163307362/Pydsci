@@ -1,0 +1,116 @@
+1.会员基础属性表
+fdm_dpa.mls_member_info_all
+#取前1000行建为表t
+with t as
+(select * from fdm_dpa.mls_member_value_attr limit 10000)
+
+
+#记录数
+select count(1)
+from t
+
+#查看变量类型（excel中已有）
+desc formatted fdm_dpa.mls_member_info_all
+
+#空值数(null)
+select count(*)
+from t
+where gold_hold_amt is null
+#空串数('' or '-')
+select count(acct_no)
+from t
+where gold_hold_amt=' ' or gold_hold_amt='-'
+
+#唯一值数
+select count(distinct gold_hold_amt) 
+from t
+
+#零值数
+select count(gold_hold_amt) 
+from t
+where gold_hold_amt=0
+
+#正值数
+select count(gold_hold_amt) 
+from t
+where gold_hold_amt>0
+
+#负值数
+select count(gold_hold_amt) 
+from t
+where gold_hold_amt<0
+
+#最小、最大值数
+(select * from fdm_dpa.mls_member_info_all )
+
+select min(user_age) ,max(user_age),avg(user_age) ,stddev(user_age),stddev(user_age)/avg(user_age) as cv 
+from t
+where user_age is not null
+
+
+select min(gold_hold_amt) ,max(gold_hold_amt) 
+from t
+
+
+#平均值
+select avg(gold_hold_amt) 
+from t
+where gold_hold_amt is not null
+
+#标准差
+select stddev(gold_hold_amt)
+from t
+where gold_hold_amt is not null
+
+#变异系数（标准差/均值）
+select stddev(gold_hold_amt)/avg(gold_hold_amt) as cv
+from t
+where gold_hold_amt is not null
+
+
+#类别数量(=>唯一值数)
+select count(distinct gold_hold_amt) 
+from t
+
+#最大、最小类别用户占比
+with t1 as
+(select acct_no ,sply_flag from fdm_dpa.mls_member_info_all
+where sply_flag is not null),
+t2 as
+(select sply_flag, count(acct_no)/(select count(acct_no) from t1) as proportion
+from t1
+group by sply_flag)
+select max(proportion), min(proportion)
+from t2
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
